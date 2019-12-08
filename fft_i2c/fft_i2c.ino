@@ -66,5 +66,13 @@ void loop() {
     buff[i] = max(data[i], 1) & 0xFF;
   }
 
+  // Some clever manipulation to try and clean out some noisy stuff.
+  // Discard 1st band and then assign 1st and 2nd band to the 2 components of 2nd band
+  buff[0] = max(data[2], 1) & 0xFF;
+  buff[1] = max(data[2], 1) & 0xFF;
+  
+  buff[2] = max(data[3], 1) & 0xFF;
+  buff[3] = max(data[3], 1) & 0xFF;
+
   tws_delay(1);
 }
