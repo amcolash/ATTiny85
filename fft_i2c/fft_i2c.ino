@@ -1,3 +1,5 @@
+// Uses a version of TinyWireS from https://github.com/rambo/TinyWire/tree/master/TinyWireS
+// I needed to manually modify TWI_TX_BUFFER_SIZE in usiTwiSlave.h from 16 -> 32 bytes
 #include <TinyWireS.h>
 #include <fix_fft.h>
 
@@ -10,7 +12,7 @@ long start = 0;
 
 int fft_power = (int) (log(SAMPLES) / log(2));
 
-int i, sum, avg, count;
+int i, sum, avg, count, brightness;
 int8_t data[SAMPLES];
 byte buff[HALF_SAMPLES];
 
@@ -23,7 +25,7 @@ void requestEvent() {
   }
 
   // Send light level
-  TinyWireS.send(123 & 0xFF);
+  TinyWireS.send(brightness & 0xFF);
 }
 
 void setup() {
@@ -34,10 +36,16 @@ void setup() {
 }
 
 void loop() {
+  // shift values to a place where they are useful for me (with 2.2k resistor)
+  brightness = analogRead(3) - 480;
+  
+  if (brightness < 0) brightness = 0;
+  if (brightness > 255) brightness = 255;
+
   sum = 0;
 
   // Try to fix issues with first band
-  for (i = 0; i < 5; i++) {
+  for (i = 0; i < 10; i++) {
     analogRead(2);
   }
   
